@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Guestbook_App_Backend.Models;
+using Guestbook_App_Backend.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Guestbook_App_Backend
 {
@@ -25,6 +28,18 @@ namespace Guestbook_App_Backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+
+            services.Configure<GuestbookDatabaseSettings>(
+                Configuration.GetSection(nameof(GuestbookDatabaseSettings)));
+
+            services.AddSingleton<IGuestbookDatabaseSettings>(sp => 
+                sp.GetRequiredService<IOptions<GuestbookDatabaseSettings>>().Value);
+
+            services.AddSingleton<PostService>();
+
+            services.AddSingleton<UserService>();
+
             services.AddControllers();
         }
 
